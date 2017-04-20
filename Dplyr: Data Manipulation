@@ -1,0 +1,93 @@
+
+
+
+rm(list = ls())
+library(nycflights13)
+library(tidyverse)
+flights= nycflights13::flights
+
+names(flights)
+
+glimpse(flights)
+
+#Select all the flights on Jan 1st. It will print the results but wont create a dataset
+filter(flights, month == 1, day == 1)
+
+#Here it will create a new df jan1. But it wont print the results
+jan1 = filter(flights, month == 1, day == 1)
+
+
+#R either prints out the results, or saves them to a variable. If you want to do both, you can wrap the assignment in parentheses:
+(dec25 <- filter(flights, month == 12, day == 25))
+
+#FLights departed in November or December
+nov_dec1 = filter(flights, month == 11 | month == 12)
+
+# useful shorthand for this problem is x %in% y. It will select a subset which has a flight either in November & December
+nov_dec <- filter(flights, month %in% c(11, 12))
+
+
+
+# if you wanted to find flights that weren’t delayed (on arrival or departure) by more than two hours, you could use either of the 
+# following two filters:
+filter(flights, !(arr_delay > 120 | dep_delay > 120))
+filter(flights, arr_delay <= 120, dep_delay <= 120)
+
+
+#Flights that have dep_time as missing
+filter(flights, is.na(dep_time) )
+names(flights)
+
+  
+# Flights that Were operated by United, American, or Delta
+filter(flights, carrier %in% c("AA", "DL", "UA"))
+
+
+#Departed in summer (July, August, and September) The variable month has the month, and it is numeric
+filter(flights, between(month, 7, 9)) #7 is July and 9 is September
+
+# Flights Arrived more than two hours late, but didn’t leave late
+filter(flights, !is.na(dep_delay), dep_delay <= 0, arr_delay > 120)
+
+
+# Flights that departed between midnight and 6am (inclusive).
+filter(flights, dep_time >= 0, dep_time <= 600)
+filter(flights, between(dep_time, 0, 600))  #OR we can use BETWEEN argument as well
+
+
+
+
+##########################    ARRANGE()     #############################
+# arrange() works similarly to filter() except that instead of selecting
+# rows, it changes their order.
+
+# Arranging the flights according to year, month & date. In ascending order
+arrange(flights, year, month, day)
+
+
+# Use desc() to reorder by a column in descending order:
+arrange(flights, desc(arr_delay))
+
+# Missing values are always sorted at the end:
+df <- tibble(x = c(5, 2, NA))
+arrange(df, x)
+
+#FLigths with longest distances in deescending order
+long_dist = arrange(flights, desc(distance))
+long_dist[1,]
+
+
+# rename is used to rename  a variable
+rename(flights, tail_num = tailnum)
+
+
+# Another option is to use select() in conjunction with the every thing() helper. This is useful if you have a handful of variables
+# you’d like to move to the start of the data frame:
+select(flights, time_hour, air_time, everything())
+
+# Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+select(flights, starts_with("dep_"), starts_with("arr_"))
+select(flights, matches("^(dep|arr)_(time|delay)$"))
+
+
